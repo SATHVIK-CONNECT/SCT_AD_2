@@ -55,6 +55,7 @@ class _HomeState extends State<Home> {
                           todo: todo,
                           onToDoChanged: _handleToDoChange,
                           onDeleteItem: _deleteToDoItem,
+                          onEditItem: _editToDoItem,
                         ),
                     ],
                   ),
@@ -83,12 +84,10 @@ class _HomeState extends State<Home> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: TextField(
-
                       controller: _todoController,
                       decoration: InputDecoration(
-                        icon: Icon(Icons.task_alt,color: tdBlue,),
+                        icon: Icon(Icons.task_alt, color: tdBlue),
                         hintText: 'Add a new Task',
-
                         border: InputBorder.none,
                       ),
                     ),
@@ -96,23 +95,31 @@ class _HomeState extends State<Home> {
                 ),
                 Container(
                   margin: EdgeInsets.only(bottom: 20, right: 20),
+                  width: 60,
+                  height: 60,
                   child: ElevatedButton(
-
                     onPressed: () {
                       _addToDoItem(_todoController.text);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: tdBlue,
-                      minimumSize: Size(50, 50),
-                      elevation: 1,
+                      shape: CircleBorder(),
+                      elevation: 4,
+                      padding: EdgeInsets.zero,
                     ),
-
-                    child: Text('+', style: TextStyle(fontSize: 40, color: Colors.white)),
+                    child: Center(
+                      child: Text(
+                        '+',
+                        style: TextStyle(fontSize: 30, color: Colors.white),
+                      ),
+                    ),
                   ),
                 ),
+
               ],
             ),
           ),
+
         ],
       ),
     );
@@ -150,6 +157,41 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void _editToDoItem(ToDo todo) {
+    final TextEditingController _editController = TextEditingController(text: todo.todoText);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Edit Task"),
+          content: TextField(
+            controller: _editController,
+            decoration: InputDecoration(hintText: "Enter updated task"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  todo.todoText = _editController.text;
+                });
+                Navigator.of(context).pop();
+              },
+              child: Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   void _addToDoItem(String toDo) {
     setState(() {
       todosList.add(
@@ -179,7 +221,7 @@ class _HomeState extends State<Home> {
         onChanged: (value) => _runFilter(value),
         decoration: InputDecoration(
           contentPadding: EdgeInsets.all(0),
-          prefixIcon: Icon(Icons.search, color: tdBlack, size: 20),
+          prefixIcon: Icon(Icons.search, color: tdBlack, size: 18),
           prefixIconConstraints: BoxConstraints(maxHeight: 20, minWidth: 25),
           border: InputBorder.none,
           hintText: 'Search',
